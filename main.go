@@ -9,7 +9,6 @@ import (
 	"github.com/gotk3/gotk3/gtk"
 )
 
-
 //go:embed main.glade
 var main_glade string
 
@@ -35,7 +34,7 @@ func main() {
 	}
 
 	win := obj.(*gtk.Window)
-    win.SetTitle("NixOS helper")
+	win.SetTitle("NixOS helper")
 	win.Connect("destroy", func() {
 		gtk.MainQuit()
 	})
@@ -88,36 +87,36 @@ func main() {
 			log_text.SetText(fmt.Sprintf("log: %v", err))
 		}
 	})
-	
+
 	gedit.Connect("clicked", func() {
 		err = exec.Command("gedit", "admin:///etc/nixos/configuration.nix").Start()
 		log_text.SetText(fmt.Sprintf("log: %v", err))
 	})
-	
+
 	update.Connect("clicked", func() {
 		err = exec.Command("gnome-terminal", "--", "bash", "-c",
-			"sudo nix-channel --update" + bash_pressanykey,
+			"sudo nix-channel --update"+bash_pressanykey,
 		).Start()
 		log_text.SetText(fmt.Sprintf("log: %v", err))
 	})
-	
+
 	rebuild.Connect("clicked", func() {
 		err = exec.Command("gnome-terminal", "--", "bash", "-c",
-			"sudo nixos-rebuild boot" + bash_pressanykey,
+			"sudo nixos-rebuild boot"+bash_pressanykey,
 		).Start()
 		log_text.SetText(fmt.Sprintf("log: %v", err))
 	})
-	
+
 	garbage.Connect("clicked", func() {
 		err = exec.Command("gnome-terminal", "--", "bash", "-c",
-			"sudo nix-collect-garbage -d" + bash_pressanykey,
+			"sudo nix-collect-garbage -d"+bash_pressanykey,
 		).Start()
 		log_text.SetText(fmt.Sprintf("log: %v", err))
 	})
-	
+
 	optimize.Connect("clicked", func() {
 		err = exec.Command("gnome-terminal", "--", "bash", "-c",
-			"sudo nix optimise-store" + bash_pressanykey,
+			"sudo nix optimise-store"+bash_pressanykey,
 		).Start()
 		log_text.SetText(fmt.Sprintf("log: %v", err))
 	})
