@@ -9,10 +9,50 @@ import (
 	"github.com/gotk3/gotk3/gtk"
 )
 
+const (
+	search_nixos = iota
+	search_nixos_wiki = iota
+)
+
+const (
+	shell_update = iota
+	shell_rebuild = iota
+	shell_garbage = iota
+	shell_optimize = iota
+)
+
 //go:embed main.glade
 var main_glade string
 
-var bash_pressanykey string = ` ; read -n 1 -s -r -p 'Press any key to continue'`
+func shell(option int) error {
+	var text string
+	var bash_pressanykey string = ` ; read -n 1 -s -r -p 'Press any key to continue'`
+	switch option {
+	case shell_update:
+		text = "sudo nix-channel --update" + bash_pressanykey
+	case shell_rebuild:
+		text = "sudo nixos-rebuild boot" + bash_pressanykey
+	case shell_garbage:
+		text = "sudo nix-collect-garbage -d" + bash_pressanykey
+	case shell_optimize:
+		text = "sudo nix optimise-store" + bash_pressanykey
+	}
+	err := exec.Command("gnome-terminal", "--", "bash", "-c",
+			text,
+		).Start()
+	return err
+}
+
+func search(option int, text string) error {
+	switch option {
+	case search_nixos:
+		text = "https://search.nixos.org/packages?channel=21.05&from=0&size=50&sort=relevance&query=" + text
+	case search_nixos_wiki:
+		text = "https://nixos.wiki/index.php?go=Go&search=" + text
+	}
+	err := exec.Command("xdg-open", text).Start()
+	return err
+}
 
 func main() {
 	// Initialize GTK without parsing any command line arguments.
@@ -34,7 +74,6 @@ func main() {
 	}
 
 	win := obj.(*gtk.Window)
-	win.SetTitle("NixOS helper")
 	win.Connect("destroy", func() {
 		gtk.MainQuit()
 	})
@@ -44,9 +83,9 @@ func main() {
 	log_text.SetText("log: loaded")
 
 	obj, _ = b.GetObject("search_text")
-	search_text := obj.(*gtk.Entry)
-	obj, _ = b.GetObject("search_button")
-	search_button := obj.(*gtk.Button)
+	search_text := obj.(*gtk.SearchEntry)
+	//obj, _ = b.GetObject("search_button")
+	//search_button := obj.(*gtk.Button)
 	obj, _ = b.GetObject("wiki")
 	wiki_button := obj.(*gtk.Button)
 
@@ -62,28 +101,22 @@ func main() {
 	optimize := obj.(*gtk.Button)
 
 	search_text.Connect("activate", func() {
-		text, err := search_text.GetText()
-		text = "https://search.nixos.org/packages?channel=21.05&from=0&size=50&sort=relevance&query=" + text
-		if err == nil {
-			err = exec.Command("xdg-open", text).Start()
+		if text, err := search_text.GetText(); err == nil {
+			err = search(search_nixos, text)
 			log_text.SetText(fmt.Sprintf("log: %v", err))
 		}
 	})
 
-	search_button.Connect("clicked", func() {
-		text, err := search_text.GetText()
-		text = "https://search.nixos.org/packages?channel=21.05&from=0&size=50&sort=relevance&query=" + text
-		if err == nil {
-			err = exec.Command("xdg-open", text).Start()
+	/*search_button.Connect("clicked", func() {
+		if text, err := search_text.GetText(); err == nil {
+			err = search(search_nixos, text)
 			log_text.SetText(fmt.Sprintf("log: %v", err))
 		}
-	})
+	})*/
 
 	wiki_button.Connect("clicked", func() {
-		text, err := search_text.GetText()
-		text = "https://nixos.wiki/index.php?go=Go&search=" + text
-		if err == nil {
-			err = exec.Command("xdg-open", text).Start()
+		if text, err := search_text.GetText(); err == nil {
+			err = search(search_nixos_wiki, text)
 			log_text.SetText(fmt.Sprintf("log: %v", err))
 		}
 	})
@@ -94,30 +127,22 @@ func main() {
 	})
 
 	update.Connect("clicked", func() {
-		err = exec.Command("gnome-terminal", "--", "bash", "-c",
-			"sudo nix-channel --update"+bash_pressanykey,
-		).Start()
+		err = shell(shell_update)
 		log_text.SetText(fmt.Sprintf("log: %v", err))
 	})
 
 	rebuild.Connect("clicked", func() {
-		err = exec.Command("gnome-terminal", "--", "bash", "-c",
-			"sudo nixos-rebuild boot"+bash_pressanykey,
-		).Start()
+		err = shell(shell_rebuild)
 		log_text.SetText(fmt.Sprintf("log: %v", err))
 	})
 
 	garbage.Connect("clicked", func() {
-		err = exec.Command("gnome-terminal", "--", "bash", "-c",
-			"sudo nix-collect-garbage -d"+bash_pressanykey,
-		).Start()
+		err = shell(shell_garbage)
 		log_text.SetText(fmt.Sprintf("log: %v", err))
 	})
 
 	optimize.Connect("clicked", func() {
-		err = exec.Command("gnome-terminal", "--", "bash", "-c",
-			"sudo nix optimise-store"+bash_pressanykey,
-		).Start()
+		err = shell(shell_optimize)
 		log_text.SetText(fmt.Sprintf("log: %v", err))
 	})
 

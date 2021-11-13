@@ -1,7 +1,7 @@
-# Simple Nix OS helper using Go & GTK3
+# Simple NixOS helper using Go & GTK3
 ### Provided:
 - Search on
-	- https://search.nixos.org/packages?
+	- https://search.nixos.org/packages
 	- https://nixos.wiki/
 - gedit to open configuration.nix
 - channels update
@@ -9,7 +9,10 @@
 - garbage collect
 - store optimization
 
-![Program screenshot](screenshot.png)
+
+| ![Program screenshot](screenshot.png) | ![Program screenshot dark](screenshot_dark.png) |
+| ------------- | ------------- |
+| Adwaita light | Adwaita dark |
 
 ### WIP:
 - logs

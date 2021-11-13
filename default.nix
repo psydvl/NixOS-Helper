@@ -1,14 +1,10 @@
 with import <nixpkgs>{}; # { buildGoPackage, fetchFromGitHub, pkg-config, gtk3, go, makeDesktopItem }:
 buildGoPackage rec {
 	pname = "NixOS-Helper";
-	version = "0.1.1";
+	version = "0.1.2";
 
-	src = fetchFromGitHub {
-		owner = "psydvl";
-		repo = "NixOS-Helper";
-		rev = "v${version}";
-		sha256 = "SHA256"; # nix-prefetch-git https://github.com/psydvl/NixOS-Helper --rev v0.1.1
-	};
+	src = ./.;
+	#src = github.nix;
 
 	nativeBuildInputs = [
 		pkg-config
@@ -30,6 +26,11 @@ buildGoPackage rec {
 	};
 	
 	postInstall = ''
-		cp -r ${pname}.svg $out/usr/share/icons/hicolor/scalable/apps/
+		install -Dm644 \
+			${desktopItem}/share/applications/${pname}.desktop \
+			$out/share/applications/${pname}.desktop
+		install -Dm644 \
+			$src/${pname}.svg \
+			$out/share/icons/hicolor/scalable/apps/${pname}.svg
 	'';
 }

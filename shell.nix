@@ -2,7 +2,7 @@
 pkgs.mkShell {
 	nativeBuildInputs = [
 		pkgs.pkg-config
-		pkgs.gtk3
+		pkgs.gtk3.dev
 		pkgs.go
 		pkgs.gnome.gnome-terminal
 	];
