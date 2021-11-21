@@ -1,7 +1,7 @@
 with import <nixpkgs>{}; # { buildGoPackage, fetchFromGitHub, pkg-config, gtk3, go, makeDesktopItem }:
 buildGoPackage rec {
 	pname = "NixOS-Helper";
-	version = "0.1.2";
+	version = "0.1.3";
 
 	src = ./.;
 	#src = github.nix;
