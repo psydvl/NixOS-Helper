@@ -101,10 +101,6 @@ func shell(option int) error {
 func gedit_open(files []string) error {
 	var launch []string
 
-	for i, f := range files {
-		files[i] = "admin:///etc/nixos/" + f + ".nix"
-	}
-
 	launch = append([]string{
 		"-s",
 		"admin:///etc/nixos/configuration.nix",
@@ -131,6 +127,9 @@ func read_config() (Config, error) {
 	var files = []string{
 		"packages",
 		"specialisation", //fileSystems-home hardware-configuration networking-wireless-networks
+	}
+	for i, f := range files {
+		files[i] = "admin:///etc/nixos/" + f + ".nix"
 	}
 	var conf = Config{
 		files: files,
